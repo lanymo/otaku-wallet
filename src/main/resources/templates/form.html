@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지출 등록 - Otaku Wallet</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <header class="header">
+        <h1 class="logo">💰 Otaku Wallet</h1>
+        <button class="btn-back" onclick="location.href='/'">&larr; 뒤로가기</button>
+    </header>
+
+    <!-- Form -->
+    <section class="form-section">
+        <h2 class="form-title">➕ 새 지출 등록</h2>
+
+        <form id="expenseForm" class="expense-form">
+            <!-- 금액 -->
+            <div class="form-group">
+                <label class="form-label">💰 금액 *</label>
+                <input type="number"
+                       id="amount"
+                       class="form-input"
+                       placeholder="50000"
+                       required
+                       min="1">
+            </div>
+
+            <!-- 카테고리 -->
+            <div class="form-group">
+                <label class="form-label">🏷️ 카테고리 *</label>
+                <div class="category-grid">
+                    <button type="button" class="category-btn" data-category="GOODS">
+                        <span class="category-emoji">🎁</span>
+                        <span class="category-name">굿즈</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="EVENT">
+                        <span class="category-emoji">🎫</span>
+                        <span class="category-name">이벤트</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="STREAMING">
+                        <span class="category-emoji">📺</span>
+                        <span class="category-name">스트리밍</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="GAME">
+                        <span class="category-emoji">🎮</span>
+                        <span class="category-name">게임</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="BOOK">
+                        <span class="category-emoji">📚</span>
+                        <span class="category-name">책/만화</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="FOOD">
+                        <span class="category-emoji">🍜</span>
+                        <span class="category-name">덕질 음식</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="ETC">
+                        <span class="category-emoji">💰</span>
+                        <span class="category-name">기타</span>
+                    </button>
+                </div>
+                <input type="hidden" id="category" required>
+            </div>
+
+            <!-- 만족도 -->
+            <div class="form-group">
+                <label class="form-label">⭐ 만족도 *</label>
+                <div class="star-rating-container">
+                    <div class="star-rating" id="starRating">
+                        <span class="star" data-value="1">☆</span>
+                        <span class="star" data-value="2">☆</span>
+                        <span class="star" data-value="3">☆</span>
+                        <span class="star" data-value="4">☆</span>
+                        <span class="star" data-value="5">☆</span>
+                    </div>
+                    <p class="rating-text" id="ratingText">별을 드래그하거나 클릭하세요</p>
+                </div>
+                <input type="hidden" id="satisfactionRating" value="0" required>
+            </div>
+
+            <!-- 구매일 -->
+            <div class="form-group">
+                <label class="form-label">📅 구매일 *</label>
+                <input type="date"
+                       id="purchaseDate"
+                       class="form-input"
+                       required>
+            </div>
+
+            <!-- 설명 -->
+            <div class="form-group">
+                <label class="form-label">📝 설명</label>
+                <textarea id="description"
+                          class="form-textarea"
+                          placeholder="어떤 지출이었나요? (선택사항)"
+                          rows="4"
+                          maxlength="500"></textarea>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="location.href='/'">
+                    취소
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    등록하기
+                </button>
+            </div>
+        </form>
+    </section>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+    // 페이지 로드 시 초기화
+    window.addEventListener('load', () => {
+        initForm();
+    });
+</script>
+</body>
+</html>

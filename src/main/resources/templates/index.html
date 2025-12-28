@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오타쿠 지출 관리</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <h1 class="logo">💰 Otaku Wallet</h1>
+    <p class="subtitle">행복한 덕질, 현명한 소비</p>
+  </header>
+
+  <!-- Statistics -->
+  <section class="statistics">
+    <div class="stat-card">
+      <div class="stat-icon">💸</div>
+      <div class="stat-content">
+        <p class="stat-label">실제 총액</p>
+        <p class="stat-value" id="totalAmount">0원</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💳</div>
+      <div class="stat-content">
+        <p class="stat-label">표시 총액</p>
+        <p class="stat-value" id="displayAmount">0원</p>
+      </div>
+    </div>
+    <div class="stat-card highlight">
+      <div class="stat-icon">✨</div>
+      <div class="stat-content">
+        <p class="stat-label">절약액</p>
+        <p class="stat-value" id="savedAmount">0원</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">😊</div>
+      <div class="stat-content">
+        <p class="stat-label">만족 지출</p>
+        <p class="stat-value" id="satisfiedCount">0개</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn-primary" onclick="location.href='/form.html'">
+      ➕ 새 지출 등록
+    </button>
+  </div>
+
+  <!-- Expense List -->
+  <section class="expenses">
+    <h2 class="section-title">📋 지출 내역</h2>
+    <div id="expenseList" class="expense-list">
+      <div class="loading">로딩 중...</div>
+    </div>
+  </section>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+  // 페이지 로드 시 데이터 불러오기
+  window.addEventListener('load', () => {
+    loadStatistics();
+    loadExpenses();
+  });
+</script>
+</body>
+</html>
