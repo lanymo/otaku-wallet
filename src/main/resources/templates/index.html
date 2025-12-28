@@ -20,7 +20,10 @@
       <div class="stat-icon">💸</div>
       <div class="stat-content">
         <p class="stat-label">실제 총액</p>
-        <p class="stat-value" id="totalAmount">0원</p>
+        <p class="stat-value blurred" id="totalAmount" data-real="0원">0원</p>
+        <button class="truth-eye-btn" id="truthEyeBtn" onclick="toggleTruthEye()">
+          👁️ 진실의 눈
+        </button>
       </div>
     </div>
     <div class="stat-card">
@@ -28,13 +31,6 @@
       <div class="stat-content">
         <p class="stat-label">표시 총액</p>
         <p class="stat-value" id="displayAmount">0원</p>
-      </div>
-    </div>
-    <div class="stat-card highlight">
-      <div class="stat-icon">✨</div>
-      <div class="stat-content">
-        <p class="stat-label">절약액</p>
-        <p class="stat-value" id="savedAmount">0원</p>
       </div>
     </div>
     <div class="stat-card">
@@ -48,14 +44,19 @@
 
   <!-- Actions -->
   <div class="actions">
-    <button class="btn btn-primary" onclick="location.href='/form.html'">
+    <button class="btn btn-primary" onclick="location.href='/form'">
       ➕ 새 지출 등록
     </button>
   </div>
 
   <!-- Expense List -->
   <section class="expenses">
-    <h2 class="section-title">📋 지출 내역</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 class="section-title">📋 지출 내역</h2>
+      <button class="truth-eye-btn" id="listTruthEyeBtn" onclick="toggleListTruthEye()">
+        👁️ 진실의 눈
+      </button>
+    </div>
     <div id="expenseList" class="expense-list">
       <div class="loading">로딩 중...</div>
     </div>

@@ -7,7 +7,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background:  #fffef5;
     min-height: 100vh;
     padding: 20px;
 }
@@ -22,6 +22,10 @@ body {
     text-align: center;
     margin-bottom: 40px;
     position: relative;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);  /* 헤더만 그라디언트 */
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 .logo {
@@ -65,7 +69,7 @@ body {
 }
 
 .stat-card {
-    background: white;
+    background: white;  /* 노란빛 흰색 */
     border-radius: 20px;
     padding: 30px;
     display: flex;
@@ -106,6 +110,41 @@ body {
 }
 
 .stat-card.highlight .stat-value {
+    color: white;
+}
+
+/* 모자이크 효과 */
+.stat-value.blurred {
+    filter: blur(8px);
+    user-select: none;
+    cursor: pointer;
+}
+
+.stat-value.blurred:hover {
+    filter: blur(6px);
+}
+
+/* 진실의 눈 버튼 */
+.truth-eye-btn {
+    background: rgba(102, 126, 234, 0.1);
+    border: 2px solid #667eea;
+    color: #667eea;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+.truth-eye-btn:hover {
+    background: #667eea;
+    color: white;
+}
+
+.truth-eye-btn.active {
+    background: #667eea;
     color: white;
 }
 
@@ -178,7 +217,7 @@ body {
 }
 
 .expense-card {
-    background: #f8f9fa;
+    background: #fffef5;
     border-radius: 15px;
     padding: 20px;
     display: flex;
@@ -223,16 +262,25 @@ body {
     font-weight: 700;
     color: #333;
     margin-bottom: 5px;
+    position: relative;
 }
 
 .expense-amount.zero {
     color: #667eea;
 }
 
+/* 모자이크 금액 */
+.expense-amount.blurred {
+    filter: blur(10px);
+    user-select: none;
+}
+
 .expense-original {
     font-size: 0.9em;
     color: #999;
-    text-decoration: line-through;
+    filter: blur(8px);
+    display: inline-block;
+    margin-left: 10px;
 }
 
 .expense-stars {
@@ -265,7 +313,7 @@ body {
 
 /* Form */
 .form-section {
-    background: white;
+    background: #fffef5;  /* 노란빛 흰색 */
     border-radius: 20px;
     padding: 40px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -298,6 +346,7 @@ body {
     border-radius: 10px;
     font-size: 1em;
     transition: border-color 0.3s;
+    background: white;
 }
 
 .form-input:focus,
@@ -355,7 +404,7 @@ body {
     color: white;
 }
 
-/* Star Rating */
+/* Star Rating - 애니메이션 제거 */
 .star-rating-container {
     text-align: center;
 }
@@ -369,7 +418,7 @@ body {
 }
 
 .star {
-    transition: all 0.2s;
+    transition: color 0.2s;  /* transform 제거 */
     cursor: pointer;
 }
 
@@ -381,8 +430,9 @@ body {
     color: #ddd;
 }
 
+/* hover 애니메이션 제거 */
 .star:hover {
-    transform: scale(1.2);
+    /* transform: scale(1.2); 제거 */
 }
 
 .rating-text {
