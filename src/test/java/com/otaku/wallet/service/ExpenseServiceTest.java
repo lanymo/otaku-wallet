@@ -32,6 +32,7 @@ class ExpenseServiceTest {
     void createExpense() {
         // given
         ExpenseDto.Request request = new ExpenseDto.Request(
+                "호카게 피규어",
                 50000,
                 ExpenseCategory.GOODS,
                 "피규어 구매",
@@ -44,6 +45,7 @@ class ExpenseServiceTest {
 
         // then
         assertNotNull(response.getId());
+        assertEquals("호카게 피규어", response.getTitle());
         assertEquals(50000, response.getAmount());
         assertEquals(50000, response.getDisplayAmount());  // 4점 → 원가
         assertEquals(ExpenseCategory.GOODS, response.getCategory());
@@ -56,6 +58,7 @@ class ExpenseServiceTest {
     void createExpenseWithPerfectRating() {
         // given
         ExpenseDto.Request request = new ExpenseDto.Request(
+                "최고의 피규어",
                 50000,
                 ExpenseCategory.GOODS,
                 "최고의 피규어!",
@@ -67,6 +70,7 @@ class ExpenseServiceTest {
         ExpenseDto.Response response = service.createExpense(TEST_USER_ID,request);
 
         // then
+        assertEquals("최고의 피규어", response.getTitle());
         assertEquals(50000, response.getAmount());      // 실제 금액
         assertEquals(0, response.getDisplayAmount());   // 표시 금액 = 0원!
         assertTrue(response.getIsSatisfied());
@@ -80,7 +84,7 @@ class ExpenseServiceTest {
     void getExpense() {
         // given - 먼저 등록
         ExpenseDto.Request request = new ExpenseDto.Request(
-                30000, ExpenseCategory.EVENT, "팬미팅", 5, LocalDate.now()
+                "팬미팅 티켓", 30000, ExpenseCategory.EVENT, "팬미팅", 5, LocalDate.now()
         );
         ExpenseDto.Response created = service.createExpense(TEST_USER_ID,request);
 
@@ -89,6 +93,7 @@ class ExpenseServiceTest {
 
         // then
         assertEquals(created.getId(), found.getId());
+        assertEquals("팬미팅 티켓", found.getTitle());
         assertEquals(30000, found.getAmount());
         assertEquals(0, found.getDisplayAmount());  // 5점 → 0원
         assertEquals(ExpenseCategory.EVENT, found.getCategory());
@@ -108,13 +113,13 @@ class ExpenseServiceTest {
     void getAllExpenses() {
         // given
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                10000, ExpenseCategory.GOODS, "굿즈1", 3, LocalDate.of(2024, 12, 20)
+                "굿즈1", 10000, ExpenseCategory.GOODS, "굿즈1", 3, LocalDate.of(2024, 12, 20)
         ));
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                20000, ExpenseCategory.EVENT, "이벤트", 4, LocalDate.of(2024, 12, 22)
+                "이벤트 티켓", 20000, ExpenseCategory.EVENT, "이벤트", 4, LocalDate.of(2024, 12, 22)
         ));
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                30000, ExpenseCategory.STREAMING, "구독", 5, LocalDate.of(2024, 12, 24)
+                "구독료", 30000, ExpenseCategory.STREAMING, "구독", 5, LocalDate.of(2024, 12, 24)
         ));
 
         // when
@@ -137,13 +142,13 @@ class ExpenseServiceTest {
     void getExpensesByCategory() {
         // given
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                10000, ExpenseCategory.GOODS, "굿즈1", 3, LocalDate.now()
+                "굿즈1", 10000, ExpenseCategory.GOODS, "굿즈1", 3, LocalDate.now()
         ));
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                20000, ExpenseCategory.GOODS, "굿즈2", 4, LocalDate.now()
+                "굿즈2", 20000, ExpenseCategory.GOODS, "굿즈2", 4, LocalDate.now()
         ));
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                30000, ExpenseCategory.EVENT, "이벤트", 5, LocalDate.now()
+                "이벤트", 30000, ExpenseCategory.EVENT, "이벤트", 5, LocalDate.now()
         ));
 
         // when
@@ -161,13 +166,13 @@ class ExpenseServiceTest {
     void getSatisfiedExpenses() {
         // given
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                10000, ExpenseCategory.GOODS, "별로", 3, LocalDate.now()
+                "별로", 10000, ExpenseCategory.GOODS, "별로", 3, LocalDate.now()
         ));
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                20000, ExpenseCategory.EVENT, "최고!", 5, LocalDate.now()
+                "최고!", 20000, ExpenseCategory.EVENT, "최고!", 5, LocalDate.now()
         ));
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                30000, ExpenseCategory.STREAMING, "완벽!", 5, LocalDate.now()
+                "완벽!", 30000, ExpenseCategory.STREAMING, "완벽!", 5, LocalDate.now()
         ));
 
         // when
@@ -188,13 +193,13 @@ class ExpenseServiceTest {
     void getStatistics() {
         // given
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                50000, ExpenseCategory.GOODS, "피규어", 5, LocalDate.now()
+                "피규어", 50000, ExpenseCategory.GOODS, "피규어", 5, LocalDate.now()
         ));  // displayAmount = 0
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                30000, ExpenseCategory.EVENT, "팬미팅", 4, LocalDate.now()
+                "팬미팅", 30000, ExpenseCategory.EVENT, "팬미팅", 4, LocalDate.now()
         ));  // displayAmount = 30000
         service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
-                15000, ExpenseCategory.STREAMING, "구독", 3, LocalDate.now()
+                "구독", 15000, ExpenseCategory.STREAMING, "구독", 3, LocalDate.now()
         ));  // displayAmount = 15000
 
         // when
@@ -222,18 +227,19 @@ class ExpenseServiceTest {
     void updateExpense() {
         // given - 4점으로 등록
         ExpenseDto.Request createRequest = new ExpenseDto.Request(
-                50000, ExpenseCategory.GOODS, "피규어", 4, LocalDate.now()
+                "피규어", 50000, ExpenseCategory.GOODS, "피규어", 4, LocalDate.now()
         );
         ExpenseDto.Response created = service.createExpense(TEST_USER_ID,createRequest);
         assertEquals(50000, created.getDisplayAmount());  // 4점 → 원가
 
         // when - 5점으로 변경
         ExpenseDto.Request updateRequest = new ExpenseDto.Request(
-                50000, ExpenseCategory.GOODS, "최고의 피규어!", 5, LocalDate.now()
+                "최고의 피규어", 50000, ExpenseCategory.GOODS, "최고의 피규어!", 5, LocalDate.now()
         );
         ExpenseDto.Response updated = service.updateExpense(TEST_USER_ID, created.getId(), updateRequest);
 
         // then
+        assertEquals("최고의 피규어", updated.getTitle());
         assertEquals(0, updated.getDisplayAmount());  // 5점 → 0원!
         assertTrue(updated.getIsSatisfied());
         assertEquals("최고의 피규어!", updated.getDescription());
@@ -244,18 +250,19 @@ class ExpenseServiceTest {
     void updateCategory() {
         // given
         ExpenseDto.Request createRequest = new ExpenseDto.Request(
-                30000, ExpenseCategory.GOODS, "이벤트 굿즈", 5, LocalDate.now()
+                "이벤트 굿즈", 30000, ExpenseCategory.GOODS, "이벤트 굿즈", 5, LocalDate.now()
         );
         ExpenseDto.Response created = service.createExpense(TEST_USER_ID,createRequest);
         assertEquals(ExpenseCategory.GOODS, created.getCategory());
 
         // when - GOODS → EVENT
         ExpenseDto.Request updateRequest = new ExpenseDto.Request(
-                30000, ExpenseCategory.EVENT, "이벤트 굿즈", 5, LocalDate.now()
+                "이벤트 티켓", 30000, ExpenseCategory.EVENT, "이벤트 굿즈", 5, LocalDate.now()
         );
         ExpenseDto.Response updated = service.updateExpense(TEST_USER_ID, created.getId(), updateRequest);
 
         // then
+        assertEquals("이벤트 티켓", updated.getTitle());
         assertEquals(ExpenseCategory.EVENT, updated.getCategory());
         assertEquals("🎫", updated.getCategoryEmoji());  // 이모지도 변경!
     }
@@ -267,7 +274,7 @@ class ExpenseServiceTest {
     void deleteExpense() {
         // given
         ExpenseDto.Request request = new ExpenseDto.Request(
-                10000, ExpenseCategory.GOODS, "삭제될 지출", 3, LocalDate.now()
+                "삭제될 지출", 10000, ExpenseCategory.GOODS, "삭제될 지출", 3, LocalDate.now()
         );
         ExpenseDto.Response created = service.createExpense(TEST_USER_ID,request);
 

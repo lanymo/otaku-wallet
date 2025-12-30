@@ -26,6 +26,11 @@ public class Expense {
     @Column(nullable = false)
     private String userId;
 
+    // 지출 제목 (품목명)
+    @Column(nullable = false, length = 100)
+    @Size(max = 100)
+    private String title;
+
     // 실제 구매액
     @Column(nullable = false)
     private Integer amount;
@@ -64,13 +69,14 @@ public class Expense {
     private LocalDateTime updatedAt;
 
     @Builder
-    private Expense(Long id, String userId, Integer amount, Integer displayAmount,
+    private Expense(Long id, String userId, String title, Integer amount, Integer displayAmount,
                     ExpenseCategory category, Integer satisfactionRating,
                     Boolean isSatisfied, String description,
                     LocalDate purchaseDate, LocalDateTime createdAt,
                     LocalDateTime updatedAt) {
         this.id = id;
         this.userId = userId;
+        this.title = title;
         this.amount = amount;
         this.category = category;
         this.satisfactionRating = satisfactionRating;
@@ -88,10 +94,13 @@ public class Expense {
         }
     }
 
-    public void update(Integer amount, ExpenseCategory category,
+    public void update(String title, Integer amount, ExpenseCategory category,
                        String description, Integer satisfactionRating,
                        LocalDate purchaseDate) {
         // null이 아닌 것만 수정 (선택적 수정)
+        if (title != null) {
+            this.title = title;
+        }
         if (amount != null) {
             this.amount = amount;
         }

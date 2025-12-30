@@ -19,6 +19,17 @@
         <h2 class="form-title">➕ 새 지출 등록</h2>
 
         <form id="expenseForm" class="expense-form">
+            <!-- 제목 -->
+            <div class="form-group">
+                <label class="form-label">📝 제목 *</label>
+                <input type="text"
+                       id="title"
+                       class="form-input"
+                       placeholder="예: 호카게 피규어, 원피스 107권"
+                       required
+                       maxlength="100">
+            </div>
+
             <!-- 금액 -->
             <div class="form-group">
                 <label class="form-label">💰 금액 *</label>

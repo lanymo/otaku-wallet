@@ -26,6 +26,7 @@ public class ExpenseService {
     public ExpenseDto.Response createExpense(String userId, ExpenseDto.Request request){
         Expense expense = Expense.builder()
                 .userId(userId)
+                .title(request.getTitle())
                 .amount(request.getAmount())
                 .category(request.getCategory())
                 .description(request.getDescription())
@@ -90,9 +91,9 @@ public class ExpenseService {
         Expense expense = expenseRepository.findByIdAndUserId(expenseId, userId)
                 .orElseThrow(() -> new ExpenseNotFoundException(expenseId));
 
-        // update 가능 항목 < 금액(잘못 입력한 경우), satisfactionRating(만족도 수정), description 수정)
-        expense.update(request.getAmount(), request.getCategory(), request.getDescription()
-                , request.getSatisfactionRating(), request.getPurchaseDate());
+        // update 가능 항목 (제목, 금액, 카테고리, 만족도, 설명, 구매일)
+        expense.update(request.getTitle(), request.getAmount(), request.getCategory(),
+                request.getDescription(), request.getSatisfactionRating(), request.getPurchaseDate());
         return ExpenseDto.Response.from(expense);
     }
 

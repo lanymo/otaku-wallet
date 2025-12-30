@@ -79,7 +79,8 @@ async function loadExpenses() {
                             <span class="expense-category">${expense.categoryEmoji}</span>
                             <span class="expense-category-name">${expense.category}</span>
                         </div>
-                        <div class="expense-amount ${amountClass}" 
+                        <div class="expense-title">${expense.title}</div>
+                        <div class="expense-amount ${amountClass}"
                              data-real="${formatNumber(expense.amount)}원"
                              data-display="${amountDisplay}"
                              data-rating="${expense.satisfactionRating}">
@@ -90,6 +91,7 @@ async function loadExpenses() {
                         <div class="expense-date">${expense.purchaseDate}</div>
                     </div>
                     <div class="expense-actions">
+                        <button class="btn btn-secondary" onclick="editExpense(${expense.id})">수정</button>
                         <button class="btn btn-danger" onclick="deleteExpense(${expense.id})">삭제</button>
                     </div>
                 </div>
@@ -160,10 +162,16 @@ async function deleteExpense(id) {
     }
 }
 
+// ========== 지출 수정 (폼으로 이동) ==========
+function editExpense(id) {
+    window.location.href = `/form?id=${id}`;
+}
+
 // ========== 폼 초기화 ==========
-function initForm() {
-    // 오늘 날짜 기본값
-    document.getElementById('purchaseDate').valueAsDate = new Date();
+async function initForm() {
+    // URL 파라미터에서 ID 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const expenseId = urlParams.get('id');
 
     // 카테고리 선택
     initCategorySelection();
@@ -171,8 +179,77 @@ function initForm() {
     // 별점 기능
     initStarRating();
 
+    // 수정 모드인지 확인
+    if (expenseId) {
+        // 수정 모드
+        document.querySelector('.form-title').textContent = '✏️ 지출 수정';
+        document.querySelector('button[type="submit"]').textContent = '수정하기';
+        await loadExpenseForEdit(expenseId);
+    } else {
+        // 등록 모드
+        document.getElementById('purchaseDate').valueAsDate = new Date();
+    }
+
     // 폼 제출
-    initFormSubmit();
+    initFormSubmit(expenseId);
+}
+
+// ========== 수정할 지출 데이터 로드 ==========
+async function loadExpenseForEdit(id) {
+    try {
+        const response = await fetch(`/api/expenses/${id}`);
+        if (!response.ok) {
+            alert('지출 데이터를 불러올 수 없습니다');
+            window.location.href = '/';
+            return;
+        }
+
+        const expense = await response.json();
+
+        // 폼에 데이터 채우기
+        document.getElementById('title').value = expense.title;
+        document.getElementById('amount').value = expense.amount;
+        document.getElementById('category').value = expense.category;
+        document.getElementById('satisfactionRating').value = expense.satisfactionRating;
+        document.getElementById('purchaseDate').value = expense.purchaseDate;
+        document.getElementById('description').value = expense.description || '';
+
+        // 카테고리 버튼 선택 상태 표시
+        const categoryBtn = document.querySelector(`button[data-category="${expense.category}"]`);
+        if (categoryBtn) {
+            categoryBtn.classList.add('selected');
+        }
+
+        // 별점 표시
+        const stars = document.querySelectorAll('.star');
+        stars.forEach((star, index) => {
+            if (index < expense.satisfactionRating) {
+                star.classList.add('filled');
+                star.classList.remove('empty');
+                star.textContent = '★';
+            }
+        });
+
+        // 별점 텍스트 업데이트
+        const ratingText = document.getElementById('ratingText');
+        const messages = [
+            '별을 드래그하거나 클릭하세요',
+            '⭐ 별로예요 (1점)',
+            '⭐⭐ 그저 그래요 (2점)',
+            '⭐⭐⭐ 괜찮아요 (3점)',
+            '⭐⭐⭐⭐ 좋아요! (4점)',
+            '⭐⭐⭐⭐⭐ 최고예요! 0원 처리됩니다! (5점)'
+        ];
+        ratingText.textContent = messages[expense.satisfactionRating];
+        if (expense.satisfactionRating === 5) {
+            ratingText.classList.add('perfect');
+        }
+
+    } catch (error) {
+        console.error('데이터 로드 오류:', error);
+        alert('오류가 발생했습니다');
+        window.location.href = '/';
+    }
 }
 
 // ========== 카테고리 선택 ==========
@@ -275,17 +352,23 @@ function initStarRating() {
 }
 
 // ========== 폼 제출 ==========
-function initFormSubmit() {
+function initFormSubmit(expenseId) {
     const form = document.getElementById('expenseForm');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        const title = document.getElementById('title').value.trim();
         const amount = parseInt(document.getElementById('amount').value);
         const category = document.getElementById('category').value;
         const rating = parseInt(document.getElementById('satisfactionRating').value);
         const purchaseDate = document.getElementById('purchaseDate').value;
         const description = document.getElementById('description').value;
+
+        if (!title) {
+            alert('제목을 입력해주세요');
+            return;
+        }
 
         if (!category) {
             alert('카테고리를 선택해주세요');
@@ -298,6 +381,7 @@ function initFormSubmit() {
         }
 
         const data = {
+            title,
             amount,
             category,
             satisfactionRating: rating,
@@ -306,23 +390,36 @@ function initFormSubmit() {
         };
 
         try {
-            const response = await fetch('/api/expenses', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
+            let response;
+            if (expenseId) {
+                // 수정 모드
+                response = await fetch(`/api/expenses/${expenseId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+            } else {
+                // 등록 모드
+                response = await fetch('/api/expenses', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+            }
 
             if (response.ok) {
-                alert('등록되었습니다!');
+                alert(expenseId ? '수정되었습니다!' : '등록되었습니다!');
                 window.location.href = '/';
             } else {
                 const error = await response.text();
-                alert('등록 실패: ' + error);
+                alert((expenseId ? '수정' : '등록') + ' 실패: ' + error);
             }
         } catch (error) {
-            console.error('등록 오류:', error);
+            console.error((expenseId ? '수정' : '등록') + ' 오류:', error);
             alert('오류가 발생했습니다');
         }
     });

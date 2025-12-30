@@ -32,6 +32,7 @@ public class ExpenseRepositoryTest {
         // given <예시 entity 생성>
         Expense expense = Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("최애 피규어")
                 .amount(50000)
                 .category(ExpenseCategory.GOODS)
                 .description("최애 피규어")
@@ -58,6 +59,7 @@ public class ExpenseRepositoryTest {
         // given
         Expense expense = Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("팬미팅 티켓")
                 .amount(35000)
                 .category(ExpenseCategory.EVENT)
                 .description("팬미팅")
@@ -80,6 +82,7 @@ public class ExpenseRepositoryTest {
         // given
         Expense expense = Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("만화책")
                 .amount(20000)
                 .category(ExpenseCategory.BOOK)
                 .satisfactionRating(3)
@@ -99,16 +102,19 @@ public class ExpenseRepositoryTest {
         // given
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("굿즈1")
                 .amount(50000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(5).purchaseDate(LocalDate.now()).build());
 
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("굿즈2")
                 .amount(30000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(4).purchaseDate(LocalDate.now()).build());
 
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("이벤트")
                 .amount(40000).category(ExpenseCategory.EVENT)
                 .satisfactionRating(5).purchaseDate(LocalDate.now()).build());
 
@@ -130,16 +136,19 @@ public class ExpenseRepositoryTest {
         // given
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("최고 굿즈")
                 .amount(50000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(5).purchaseDate(LocalDate.now()).build());
 
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("굿즈")
                 .amount(30000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(4).purchaseDate(LocalDate.now()).build());
 
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("최고 이벤트")
                 .amount(40000).category(ExpenseCategory.EVENT)
                 .satisfactionRating(5).purchaseDate(LocalDate.now()).build());
 
@@ -164,18 +173,21 @@ public class ExpenseRepositoryTest {
         // given
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("피규어")
                 .amount(50000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(5).purchaseDate(LocalDate.now()).build());
         // -> 0원
 
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("굿즈")
                 .amount(30000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(4).purchaseDate(LocalDate.now()).build());
         // -> 30000원
 
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("이벤트")
                 .amount(40000).category(ExpenseCategory.EVENT)
                 .satisfactionRating(2).purchaseDate(LocalDate.now()).build());
         // -> 40000원
@@ -203,6 +215,7 @@ public class ExpenseRepositoryTest {
         // given
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("굿즈1")
                 .amount(10000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(3)
                 .purchaseDate(LocalDate.of(2024, 12, 15))
@@ -210,6 +223,7 @@ public class ExpenseRepositoryTest {
 
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("이벤트")
                 .amount(20000).category(ExpenseCategory.EVENT)
                 .satisfactionRating(4)
                 .purchaseDate(LocalDate.of(2024, 12, 20))
@@ -217,6 +231,7 @@ public class ExpenseRepositoryTest {
 
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("구독")
                 .amount(30000).category(ExpenseCategory.STREAMING)
                 .satisfactionRating(5)
                 .purchaseDate(LocalDate.of(2024, 12, 25))
@@ -239,6 +254,7 @@ public class ExpenseRepositoryTest {
         // given
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("굿즈")
                 .amount(10000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(3)
                 .purchaseDate(LocalDate.of(2024, 12, 1))
@@ -246,6 +262,7 @@ public class ExpenseRepositoryTest {
 
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("이벤트")
                 .amount(20000).category(ExpenseCategory.EVENT)
                 .satisfactionRating(4)
                 .purchaseDate(LocalDate.of(2024, 12, 15))
@@ -253,6 +270,7 @@ public class ExpenseRepositoryTest {
 
         repository.save(Expense.builder()
                 .userId(TEST_USER_ID)
+                .title("구독")
                 .amount(30000).category(ExpenseCategory.STREAMING)
                 .satisfactionRating(5)
                 .purchaseDate(LocalDate.of(2024, 12, 20))

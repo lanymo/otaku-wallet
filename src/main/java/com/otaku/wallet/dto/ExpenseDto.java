@@ -15,6 +15,10 @@ public class ExpenseDto {
     @RequiredArgsConstructor
     public static class Request {
 
+        @NotNull(message = "제목은 필수입니다")
+        @Size(max = 100, message = "제목은 100자 이내여야 합니다.")
+        private final String title;
+
         @NotNull(message = "금액은 필수입니다")
         @Positive(message = "금액은 양수여야 합니다")
         private final Integer amount;
@@ -40,6 +44,7 @@ public class ExpenseDto {
     @AllArgsConstructor
     public static class Response {
         private final Long id;
+        private final String title;
         private final Integer amount;
         private final Integer displayAmount;
         private final ExpenseCategory category;
@@ -54,6 +59,7 @@ public class ExpenseDto {
         public static Response from(Expense expense){
             return Response.builder()
                     .id(expense.getId())
+                    .title(expense.getTitle())
                     .amount(expense.getAmount())
                     .displayAmount(expense.getDisplayAmount())
                     .category(expense.getCategory())
