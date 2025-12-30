@@ -4,35 +4,46 @@ import com.otaku.wallet.domain.Expense;
 import com.otaku.wallet.domain.ExpenseCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
-    // 카테고리 별 조회
-    List<Expense> findByCategory(ExpenseCategory category);
+    // userId로 필터링된 전체 조회
+    List<Expense> findByUserId(String userId);
 
-    // 만족한 지출만 보기
-    List<Expense> findBySatisfactionRating(Integer rating);
+    // userId로 필터링된 단건 조회
+    Optional<Expense> findByIdAndUserId(Long id, String userId);
 
-    // 날짜 범위 조회
-    List<Expense> findByPurchaseDateBetween(LocalDate start, LocalDate end);
+    // 카테고리 별 조회 (userId 필터)
+    List<Expense> findByUserIdAndCategory(String userId, ExpenseCategory category);
 
-    // 최신순 정렬
-    List<Expense> findAllByOrderByPurchaseDateDesc();
+    // 만족한 지출만 보기 (userId 필터)
+    List<Expense> findByUserIdAndSatisfactionRating(String userId, Integer rating);
 
-    // 만족 지출 개수(5점)
-    long countBySatisfactionRating(Integer rating);
+    // 날짜 범위 조회 (userId 필터)
+    List<Expense> findByUserIdAndPurchaseDateBetween(String userId, LocalDate start, LocalDate end);
 
-    // 실제 총 지출액
-    @Query("SELECT SUM(e.amount) FROM Expense e")
-    Integer getTotalAmount();
+    // 최신순 정렬 (userId 필터)
+    List<Expense> findByUserIdOrderByPurchaseDateDesc(String userId);
 
-    // 표시 지출액
-    @Query("SELECT SUM(e.displayAmount) FROM Expense e")
-    Integer getTotalDisplayAmount();
+    // 만족 지출 개수(5점) (userId 필터)
+    long countByUserIdAndSatisfactionRating(String userId, Integer rating);
+
+    // 전체 개수 (userId 필터)
+    long countByUserId(String userId);
+
+    // 실제 총 지출액 (userId 필터)
+    @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.userId = :userId")
+    Integer getTotalAmountByUserId(@Param("userId") String userId);
+
+    // 표시 지출액 (userId 필터)
+    @Query("SELECT SUM(e.displayAmount) FROM Expense e WHERE e.userId = :userId")
+    Integer getTotalDisplayAmountByUserId(@Param("userId") String userId);
 
 }

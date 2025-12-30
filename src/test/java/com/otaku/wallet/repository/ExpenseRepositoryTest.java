@@ -22,12 +22,16 @@ public class ExpenseRepositoryTest {
     @Autowired
     private ExpenseRepository repository;
 
+    // 테스트용 고정 userId
+    private static final String TEST_USER_ID = "test-user-123";
+
     // 5점 적용 잘 되나? <0원 확인. isSat~ true인지 확인. id not null인지>
     @Test
     @DisplayName("5점 지출이 0원으로 변환된다")
     void calculateDisplayAmountForPerfectRating() {
         // given <예시 entity 생성>
         Expense expense = Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(50000)
                 .category(ExpenseCategory.GOODS)
                 .description("최애 피규어")
@@ -53,6 +57,7 @@ public class ExpenseRepositoryTest {
     void displayOriginalAmountForLowerRating(){
         // given
         Expense expense = Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(35000)
                 .category(ExpenseCategory.EVENT)
                 .description("팬미팅")
@@ -74,6 +79,7 @@ public class ExpenseRepositoryTest {
     void saveExpenseWithoutDescription() {
         // given
         Expense expense = Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(20000)
                 .category(ExpenseCategory.BOOK)
                 .satisfactionRating(3)
@@ -92,19 +98,22 @@ public class ExpenseRepositoryTest {
     void findByCategory(){
         // given
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(50000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(5).purchaseDate(LocalDate.now()).build());
 
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(30000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(4).purchaseDate(LocalDate.now()).build());
 
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(40000).category(ExpenseCategory.EVENT)
                 .satisfactionRating(5).purchaseDate(LocalDate.now()).build());
 
         // when
-        List<Expense> goodsExpense = repository.findByCategory(ExpenseCategory.GOODS);
+        List<Expense> goodsExpense = repository.findByUserIdAndCategory(TEST_USER_ID, ExpenseCategory.GOODS);
 
         // then
         assertEquals(2, goodsExpense.size());
@@ -120,20 +129,23 @@ public class ExpenseRepositoryTest {
 
         // given
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(50000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(5).purchaseDate(LocalDate.now()).build());
 
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(30000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(4).purchaseDate(LocalDate.now()).build());
 
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(40000).category(ExpenseCategory.EVENT)
                 .satisfactionRating(5).purchaseDate(LocalDate.now()).build());
 
 
         //when
-        List<Expense> satisfiedExpense = repository.findBySatisfactionRating(5);
+        List<Expense> satisfiedExpense = repository.findByUserIdAndSatisfactionRating(TEST_USER_ID, 5);
 
         // then
         assertEquals(2, satisfiedExpense.size());
@@ -151,23 +163,26 @@ public class ExpenseRepositoryTest {
 
         // given
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(50000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(5).purchaseDate(LocalDate.now()).build());
         // -> 0원
 
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(30000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(4).purchaseDate(LocalDate.now()).build());
         // -> 30000원
 
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(40000).category(ExpenseCategory.EVENT)
                 .satisfactionRating(2).purchaseDate(LocalDate.now()).build());
         // -> 40000원
 
         // when
-        Integer totalAmount = repository.getTotalAmount();
-        Integer displayAmount = repository.getTotalDisplayAmount();
+        Integer totalAmount = repository.getTotalAmountByUserId(TEST_USER_ID);
+        Integer displayAmount = repository.getTotalDisplayAmountByUserId(TEST_USER_ID);
 
         // then
         assertEquals(120000, totalAmount);
@@ -187,25 +202,29 @@ public class ExpenseRepositoryTest {
     void findByDayRange() {
         // given
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(10000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(3)
                 .purchaseDate(LocalDate.of(2024, 12, 15))
                 .build());
 
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(20000).category(ExpenseCategory.EVENT)
                 .satisfactionRating(4)
                 .purchaseDate(LocalDate.of(2024, 12, 20))
                 .build());
 
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(30000).category(ExpenseCategory.STREAMING)
                 .satisfactionRating(5)
                 .purchaseDate(LocalDate.of(2024, 12, 25))
                 .build());
 
         // when
-        List<Expense> expenses = repository.findByPurchaseDateBetween(
+        List<Expense> expenses = repository.findByUserIdAndPurchaseDateBetween(
+                TEST_USER_ID,
                 LocalDate.of(2024, 12, 18),
                 LocalDate.of(2024, 12, 31)
         );
@@ -219,25 +238,28 @@ public class ExpenseRepositoryTest {
     void orderByDateDesc(){
         // given
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(10000).category(ExpenseCategory.GOODS)
                 .satisfactionRating(3)
                 .purchaseDate(LocalDate.of(2024, 12, 1))
                 .build());
 
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(20000).category(ExpenseCategory.EVENT)
                 .satisfactionRating(4)
                 .purchaseDate(LocalDate.of(2024, 12, 15))
                 .build());
 
         repository.save(Expense.builder()
+                .userId(TEST_USER_ID)
                 .amount(30000).category(ExpenseCategory.STREAMING)
                 .satisfactionRating(5)
                 .purchaseDate(LocalDate.of(2024, 12, 20))
                 .build());
 
         // when
-        List<Expense> expenses = repository.findAllByOrderByPurchaseDateDesc();
+        List<Expense> expenses = repository.findByUserIdOrderByPurchaseDateDesc(TEST_USER_ID);
 
         // then
         assertEquals(LocalDate.of(2024, 12, 20), expenses.get(0).getPurchaseDate());

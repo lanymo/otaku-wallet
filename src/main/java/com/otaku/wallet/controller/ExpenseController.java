@@ -4,6 +4,8 @@ package com.otaku.wallet.controller;
 import com.otaku.wallet.dto.ExpenseDto;
 import com.otaku.wallet.dto.StatisticsDto;
 import com.otaku.wallet.service.ExpenseService;
+import com.otaku.wallet.service.SessionService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,39 +19,52 @@ import java.util.List;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
+    private final SessionService sessionService;
 
     @PostMapping
     public ResponseEntity<ExpenseDto.Response> createExpense(
-            @Valid @RequestBody ExpenseDto.Request request) {
-        return ResponseEntity.ok(expenseService.createExpense(request));
+            @Valid @RequestBody ExpenseDto.Request request,
+            HttpSession session) {
+        String userId = sessionService.getUserId(session);
+        return ResponseEntity.ok(expenseService.createExpense(userId, request));
     }
 
     @GetMapping
-    public ResponseEntity<List<ExpenseDto.Response>> getAllExpenses() {
-        return ResponseEntity.ok(expenseService.getAllExpenses());
+    public ResponseEntity<List<ExpenseDto.Response>> getAllExpenses(HttpSession session) {
+        String userId = sessionService.getUserId(session);
+        return ResponseEntity.ok(expenseService.getAllExpenses(userId));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ExpenseDto.Response> getExpense(@PathVariable Long id){
-        return ResponseEntity.ok(expenseService.getExpense(id));
+    public ResponseEntity<ExpenseDto.Response> getExpense(
+            @PathVariable Long id,
+            HttpSession session){
+        String userId = sessionService.getUserId(session);
+        return ResponseEntity.ok(expenseService.getExpense(userId, id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ExpenseDto.Response> updateExpense(
             @PathVariable Long id,
-            @Valid @RequestBody ExpenseDto.Request request) {
-        return ResponseEntity.ok(expenseService.updateExpense(id, request));
+            @Valid @RequestBody ExpenseDto.Request request,
+            HttpSession session) {
+        String userId = sessionService.getUserId(session);
+        return ResponseEntity.ok(expenseService.updateExpense(userId, id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExpense(@PathVariable Long id){
-        expenseService.deleteExpense(id);
+    public ResponseEntity<Void> deleteExpense(
+            @PathVariable Long id,
+            HttpSession session){
+        String userId = sessionService.getUserId(session);
+        expenseService.deleteExpense(userId, id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/statistics")
-    public ResponseEntity<StatisticsDto> getStatistics() {
-        return ResponseEntity.ok(expenseService.getStatistics());
+    public ResponseEntity<StatisticsDto> getStatistics(HttpSession session) {
+        String userId = sessionService.getUserId(session);
+        return ResponseEntity.ok(expenseService.getStatistics(userId));
     }
 
 

@@ -22,6 +22,10 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 사용자 ID (세션 기반)
+    @Column(nullable = false)
+    private String userId;
+
     // 실제 구매액
     @Column(nullable = false)
     private Integer amount;
@@ -60,12 +64,13 @@ public class Expense {
     private LocalDateTime updatedAt;
 
     @Builder
-    private Expense(Long id, Integer amount, Integer displayAmount,
+    private Expense(Long id, String userId, Integer amount, Integer displayAmount,
                     ExpenseCategory category, Integer satisfactionRating,
                     Boolean isSatisfied, String description,
                     LocalDate purchaseDate, LocalDateTime createdAt,
                     LocalDateTime updatedAt) {
         this.id = id;
+        this.userId = userId;
         this.amount = amount;
         this.category = category;
         this.satisfactionRating = satisfactionRating;

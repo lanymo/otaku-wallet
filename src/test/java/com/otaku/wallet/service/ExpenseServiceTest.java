@@ -3,6 +3,7 @@ package com.otaku.wallet.service;
 import com.otaku.wallet.domain.ExpenseCategory;
 import com.otaku.wallet.dto.ExpenseDto;
 import com.otaku.wallet.dto.StatisticsDto;
+import com.otaku.wallet.exception.ExpenseNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ class ExpenseServiceTest {
     @Autowired
     private ExpenseService service;
 
+    // 테스트용 고정 userId
+    private static final String TEST_USER_ID = "test-user-123";
+
     // ===== 생성 테스트 =====
 
     @Test
@@ -36,7 +40,7 @@ class ExpenseServiceTest {
         );
 
         // when
-        ExpenseDto.Response response = service.createExpense(request);
+        ExpenseDto.Response response = service.createExpense(TEST_USER_ID,request);
 
         // then
         assertNotNull(response.getId());
@@ -60,7 +64,7 @@ class ExpenseServiceTest {
         );
 
         // when
-        ExpenseDto.Response response = service.createExpense(request);
+        ExpenseDto.Response response = service.createExpense(TEST_USER_ID,request);
 
         // then
         assertEquals(50000, response.getAmount());      // 실제 금액
@@ -78,10 +82,10 @@ class ExpenseServiceTest {
         ExpenseDto.Request request = new ExpenseDto.Request(
                 30000, ExpenseCategory.EVENT, "팬미팅", 5, LocalDate.now()
         );
-        ExpenseDto.Response created = service.createExpense(request);
+        ExpenseDto.Response created = service.createExpense(TEST_USER_ID,request);
 
         // when - 조회
-        ExpenseDto.Response found = service.getExpense(created.getId());
+        ExpenseDto.Response found = service.getExpense(TEST_USER_ID,created.getId());
 
         // then
         assertEquals(created.getId(), found.getId());
@@ -94,8 +98,8 @@ class ExpenseServiceTest {
     @DisplayName("존재하지 않는 지출 조회 시 예외 발생")
     void getNotFoundExpense() {
         // when & then
-        assertThrows(IllegalArgumentException.class, () -> {
-            service.getExpense(999L);
+        assertThrows(ExpenseNotFoundException.class, () -> {
+            service.getExpense(TEST_USER_ID,999L);
         });
     }
 
@@ -103,18 +107,18 @@ class ExpenseServiceTest {
     @DisplayName("전체 지출을 조회할 수 있다")
     void getAllExpenses() {
         // given
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 10000, ExpenseCategory.GOODS, "굿즈1", 3, LocalDate.of(2024, 12, 20)
         ));
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 20000, ExpenseCategory.EVENT, "이벤트", 4, LocalDate.of(2024, 12, 22)
         ));
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 30000, ExpenseCategory.STREAMING, "구독", 5, LocalDate.of(2024, 12, 24)
         ));
 
         // when
-        List<ExpenseDto.Response> expenses = service.getAllExpenses();
+        List<ExpenseDto.Response> expenses = service.getAllExpenses(TEST_USER_ID);
 
         // then
         assertTrue(expenses.size() >= 3);
@@ -132,19 +136,19 @@ class ExpenseServiceTest {
     @DisplayName("카테고리별로 지출을 조회할 수 있다")
     void getExpensesByCategory() {
         // given
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 10000, ExpenseCategory.GOODS, "굿즈1", 3, LocalDate.now()
         ));
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 20000, ExpenseCategory.GOODS, "굿즈2", 4, LocalDate.now()
         ));
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 30000, ExpenseCategory.EVENT, "이벤트", 5, LocalDate.now()
         ));
 
         // when
         List<ExpenseDto.Response> goodsExpenses =
-                service.getExpensesByCategory(ExpenseCategory.GOODS);
+                service.getExpensesByCategory(TEST_USER_ID,ExpenseCategory.GOODS);
 
         // then
         assertTrue(goodsExpenses.size() >= 2);
@@ -156,18 +160,18 @@ class ExpenseServiceTest {
     @DisplayName("만족 지출만 조회할 수 있다")
     void getSatisfiedExpenses() {
         // given
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 10000, ExpenseCategory.GOODS, "별로", 3, LocalDate.now()
         ));
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 20000, ExpenseCategory.EVENT, "최고!", 5, LocalDate.now()
         ));
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 30000, ExpenseCategory.STREAMING, "완벽!", 5, LocalDate.now()
         ));
 
         // when
-        List<ExpenseDto.Response> satisfied = service.getSatisfiedExpenses();
+        List<ExpenseDto.Response> satisfied = service.getSatisfiedExpenses(TEST_USER_ID);
 
         // then
         assertTrue(satisfied.size() >= 2);
@@ -183,18 +187,18 @@ class ExpenseServiceTest {
     @DisplayName("통계를 조회할 수 있다")
     void getStatistics() {
         // given
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 50000, ExpenseCategory.GOODS, "피규어", 5, LocalDate.now()
         ));  // displayAmount = 0
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 30000, ExpenseCategory.EVENT, "팬미팅", 4, LocalDate.now()
         ));  // displayAmount = 30000
-        service.createExpense(new ExpenseDto.Request(
+        service.createExpense(TEST_USER_ID,new ExpenseDto.Request(
                 15000, ExpenseCategory.STREAMING, "구독", 3, LocalDate.now()
         ));  // displayAmount = 15000
 
         // when
-        StatisticsDto stats = service.getStatistics();
+        StatisticsDto stats = service.getStatistics(TEST_USER_ID);
 
         // then
         assertTrue(stats.getTotalAmount() >= 95000);      // 50000 + 30000 + 15000
@@ -220,14 +224,14 @@ class ExpenseServiceTest {
         ExpenseDto.Request createRequest = new ExpenseDto.Request(
                 50000, ExpenseCategory.GOODS, "피규어", 4, LocalDate.now()
         );
-        ExpenseDto.Response created = service.createExpense(createRequest);
+        ExpenseDto.Response created = service.createExpense(TEST_USER_ID,createRequest);
         assertEquals(50000, created.getDisplayAmount());  // 4점 → 원가
 
         // when - 5점으로 변경
         ExpenseDto.Request updateRequest = new ExpenseDto.Request(
                 50000, ExpenseCategory.GOODS, "최고의 피규어!", 5, LocalDate.now()
         );
-        ExpenseDto.Response updated = service.updateExpense(created.getId(), updateRequest);
+        ExpenseDto.Response updated = service.updateExpense(TEST_USER_ID, created.getId(), updateRequest);
 
         // then
         assertEquals(0, updated.getDisplayAmount());  // 5점 → 0원!
@@ -242,14 +246,14 @@ class ExpenseServiceTest {
         ExpenseDto.Request createRequest = new ExpenseDto.Request(
                 30000, ExpenseCategory.GOODS, "이벤트 굿즈", 5, LocalDate.now()
         );
-        ExpenseDto.Response created = service.createExpense(createRequest);
+        ExpenseDto.Response created = service.createExpense(TEST_USER_ID,createRequest);
         assertEquals(ExpenseCategory.GOODS, created.getCategory());
 
         // when - GOODS → EVENT
         ExpenseDto.Request updateRequest = new ExpenseDto.Request(
                 30000, ExpenseCategory.EVENT, "이벤트 굿즈", 5, LocalDate.now()
         );
-        ExpenseDto.Response updated = service.updateExpense(created.getId(), updateRequest);
+        ExpenseDto.Response updated = service.updateExpense(TEST_USER_ID, created.getId(), updateRequest);
 
         // then
         assertEquals(ExpenseCategory.EVENT, updated.getCategory());
@@ -265,14 +269,14 @@ class ExpenseServiceTest {
         ExpenseDto.Request request = new ExpenseDto.Request(
                 10000, ExpenseCategory.GOODS, "삭제될 지출", 3, LocalDate.now()
         );
-        ExpenseDto.Response created = service.createExpense(request);
+        ExpenseDto.Response created = service.createExpense(TEST_USER_ID,request);
 
         // when
-        service.deleteExpense(created.getId());
+        service.deleteExpense(TEST_USER_ID,created.getId());
 
         // then - 삭제 후 조회하면 예외 발생
-        assertThrows(IllegalArgumentException.class, () -> {
-            service.getExpense(created.getId());
+        assertThrows(ExpenseNotFoundException.class, () -> {
+            service.getExpense(TEST_USER_ID,created.getId());
         });
     }
 
@@ -280,8 +284,8 @@ class ExpenseServiceTest {
     @DisplayName("존재하지 않는 지출 삭제 시 예외 발생")
     void deleteNotFoundExpense() {
         // when & then
-        assertThrows(IllegalArgumentException.class, () -> {
-            service.deleteExpense(999L);
+        assertThrows(ExpenseNotFoundException.class, () -> {
+            service.deleteExpense(TEST_USER_ID,999L);
         });
     }
 }
